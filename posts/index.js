@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { randomBytes } = require('crypto');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 // Middleware for service
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
 const port = 4000;
@@ -17,7 +18,7 @@ app.get("/posts", (req, res) => {
     res.send(posts);
 });
 
-app.post('/posts', (req, res) => {
+app.post('/posts', async (req, res) => {
     const id = randomBytes(4).toString('hex');
     const { title } = req.body;
 
@@ -25,8 +26,22 @@ app.post('/posts', (req, res) => {
         id, title
     };
 
+    // Emit an event to the event bus when a new post gets created
+    await axios.post('http://localhost:4005/events', {
+        type: 'PostCreated',
+        data: {
+            id, title
+        }
+    }); 
+
     res.status(201).send(posts[id]);
 });
+
+app.post('/events', (req, res) => {
+    console.log('Received Event:', req.body);
+
+    res.send({}); 
+})
 
 
 
