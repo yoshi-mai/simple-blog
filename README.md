@@ -1,6 +1,6 @@
 # microservice blog app
 
-This is a basic blog application, built with a microservice architecture.
+This is a basic blog application, built with a microservice architecture and a basic event bus built from scratch.
 All data is stored in memory.
 
 ## How to run
